@@ -65,7 +65,7 @@ export class UserController extends BaseHttpController {
         return this.getUserInfo(req);
     }
 
-    @httpGet("/exists", authorize(), validateQuery(UserExistsRequest))
+    @httpGet("/exists", validateQuery(UserExistsRequest))
     async userExists(req: Request): Promise<boolean> {
         const query = req.query as any as UserExistsRequest;
         const user = await this.userRepo.findByUsername(query.username);
