@@ -1,9 +1,9 @@
 import { Database, CollectionType, aql } from "arangojs";
-import { DocumentCollection, SchemaOptions } from "arangojs/collection";
+import { DocumentCollection, EdgeCollection, SchemaOptions } from "arangojs/collection";
 import { LikeCollection, LikeCollectionIndexes, LikeCollectionSchema } from "../schemas/like";
 import { NotificationCollection, NotificationCollectionIndexes, NotificationCollectionSchema } from "../schemas/notification";
 import { PostCollection, PostCollectionIndexes, PostCollectionSchema } from "../schemas/post";
-import { RoomCollection, RoomCollectionIndexes, RoomCollectionSchema } from "../schemas/room";
+import { initializeRoomCollection, RoomCollection, RoomCollectionIndexes, RoomCollectionSchema } from "../schemas/room";
 import { UserCollection, UserCollectionIndexes, UserCollectionSchema } from "../schemas/user";
 
 export class ArangoDbConnection {
@@ -30,7 +30,7 @@ export class ArangoDbConnection {
         await this.initializeCollection(this.users, UserCollectionSchema, UserCollectionIndexes);
 
         this.rooms = this.db.collection("rooms");
-        await this.initializeCollection(this.rooms, RoomCollectionSchema, RoomCollectionIndexes);
+        await this.initializeCollection(this.rooms, RoomCollectionSchema, RoomCollectionIndexes, initializeRoomCollection);
 
         this.posts = this.db.collection("posts");
         await this.initializeCollection(this.posts, PostCollectionSchema, PostCollectionIndexes);
@@ -42,9 +42,9 @@ export class ArangoDbConnection {
         await this.initializeCollection(this.likes, LikeCollectionSchema, LikeCollectionIndexes);
     }
 
-    async initializeCollection(collection: DocumentCollection, schema: SchemaOptions & {
+    async initializeCollection(collection: DocumentCollection & EdgeCollection, schema: SchemaOptions & {
         type?: CollectionType;
-    }, indexes: [string[], boolean][] = []) {
+    }, indexes: [string[], boolean][] = [], afterCreate?: (collection: DocumentCollection & EdgeCollection) => any) {
         if (!await collection.exists()) {
             await collection.create({
                 schema,
@@ -57,6 +57,9 @@ export class ArangoDbConnection {
                     fields: idx[0]
                 })
             }));
+            if (afterCreate) {
+                await afterCreate(collection);
+            }
         }
     }
 }
