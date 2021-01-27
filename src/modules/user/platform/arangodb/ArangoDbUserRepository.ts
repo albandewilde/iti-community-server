@@ -67,4 +67,13 @@ export class ArangoDbUserRepository extends UserRepository {
 
         return results.all();
     }
+
+    async getAllUsers(): Promise<User[]> {
+        const results = await this.cnx.db.query(`
+        for user in users
+        return user
+        `);
+
+        return results.all();
+    }
 }
