@@ -5,42 +5,10 @@ import { UserService } from "modules/user/servicies/UserService";
 import { UserInfo } from "modules/user/domain";
 import { authorize, readUserId } from "../config/bearer";
 import { Ignore, validateBody, validateQuery } from "modules/common/validator";
-import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { multipart, UploadedFile } from "modules/common/upload";
 import { config } from "server/config/env";
+import {RegisterUserRequest, UpdateUserRequest, UserExistsRequest, UserResult, UserSearchRequest} from "./models/user";
 
-interface UserResult extends UserInfo {
-    photoUrl?: string;
-}
-
-class RegisterUserRequest {
-    @IsString()
-    username: string;
-
-    @IsString()
-    password: string;
-}
-
-class UpdateUserRequest {
-    @IsString()
-    @IsOptional()
-    username?: string;
-
-    @Ignore()
-    photo?: UploadedFile;
-}
-
-class UserExistsRequest {
-    @IsString()
-    @IsNotEmpty()
-    username: string;
-}
-
-class UserSearchRequest {
-    @IsString()
-    @IsNotEmpty()
-    search: string;
-}
 
 @controller("/user")
 export class UserController extends BaseHttpController {
