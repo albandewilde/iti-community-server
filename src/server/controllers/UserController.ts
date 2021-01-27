@@ -2,12 +2,13 @@ import { Request } from "express";
 import { controller, interfaces, httpGet, httpPost, httpPut, BaseHttpController, } from "inversify-express-utils";
 import { UserRepository } from "modules/user/repositories/UserRepository";
 import { UserService } from "modules/user/servicies/UserService";
-import { UserInfo } from "modules/user/domain";
+import { User, UserInfo } from "modules/user/domain";
 import { authorize, readUserId } from "../config/bearer";
 import { Ignore, validateBody, validateQuery } from "modules/common/validator";
 import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { multipart, UploadedFile } from "modules/common/upload";
-import { config } from "server/config/env";
+import { Config, config } from "server/config/env";
+import { stringify } from "uuid";
 
 interface UserResult extends UserInfo {
     photoUrl?: string;
@@ -45,6 +46,7 @@ class UserSearchRequest {
 @controller("/user")
 export class UserController extends BaseHttpController {
     constructor(
+        // private config: Config,
         private userService: UserService,
         private userRepo: UserRepository
     ) {
@@ -104,5 +106,17 @@ export class UserController extends BaseHttpController {
     @httpGet("/users", authorize())
     async getAllUsers(req: Request): Promise<Array<UserResult>> {
         return await this.userRepo.getAllUsers();
+    }
+
+    @httpGet("/:userId", authorize())
+    async getUserById( req: Request ): Promise<UserResult> {
+        const res = (await this.userRepo.findById( req.params.userId ))!;
+        // Don't sent the password hash in the scary world
+        const user: UserResult = {
+            id: res.id,
+            username: res.username,
+            photoUrl: `${config.filesUrl}/${res.photoLocation}`
+        };
+        return user;
     }
 }
