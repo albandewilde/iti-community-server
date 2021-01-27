@@ -108,6 +108,21 @@ export class ArangoDbRoomRepository extends RoomRepository {
                 _from: `users/${userId}`,
                 _to: `posts/${postId}`
             });
+        } else {
+            const result = await this.cnx.db.query(`
+            for l in likes
+            filter l._from == @userId and l._to == @postId
+            return l._key`, {
+                userId: `users/${userId}`,
+                postId: `posts/${postId}`
+            });
+
+            const keyLike = await result.all();
+            
+            await this.cnx.likes.remove({
+                _id: `likes/${keyLike[0]}`,
+                _key: `${keyLike[0]}`
+            });
         }
     }
 }

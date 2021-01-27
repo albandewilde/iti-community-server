@@ -68,4 +68,9 @@ export class UserController extends BaseHttpController {
             photoUrl: user.photoLocation ? `${config.filesUrl}/${user.photoLocation}` : undefined
         }
     }
+
+    @httpGet("/users", authorize())
+    async getAllUsers(req: Request): Promise<Array<UserResult>> {
+        return await this.userRepo.getAllUsers();
+    }
 }
