@@ -20,7 +20,7 @@ export function registerSocketModule(container: Container, emitter: DomainEventE
         socket.publish(`notifications`, {
             ...payload,
             excludedUserId: undefined
-        });
+        }, [payload.excludedUserId]);
     });
 
     emitter.on(RoomEvents.RoomAddedEvent, (payload: RoomEvents.RoomAddedEventPayload) => {
@@ -40,7 +40,7 @@ export function registerSocketModule(container: Container, emitter: DomainEventE
             createdBy: {
                 id: payload.user.id,
                 username: payload.user.username,
-                photoUrl: payload.user.photoLocation? `${fileUrl}/${payload.user.photoLocation}` : undefined
+                photoUrl: payload.user.photoLocation ? `${fileUrl}/${payload.user.photoLocation}` : undefined
             }
         });
     });

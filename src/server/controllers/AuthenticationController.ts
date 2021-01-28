@@ -3,14 +3,8 @@ import { Request } from "express";
 import { controller, httpGet, httpPost, interfaces } from "inversify-express-utils";
 import { validateBody } from "modules/common/validator";
 import { AuthenticationService, UserService } from "modules/user/servicies";
+import { LoginRequest } from "./models/authentication";
 
-class LoginRequest {
-    @IsString()
-    username: string;
-
-    @IsString()
-    password: string;
-}
 
 @controller("/auth")
 export class AuthenticationController implements interfaces.Controller {
