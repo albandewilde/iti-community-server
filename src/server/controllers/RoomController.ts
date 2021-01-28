@@ -76,4 +76,9 @@ export class RoomController extends BaseHttpController {
             attachementUrl: msg.attachementLocation ? `${config.filesUrl}/${msg.attachementLocation}` : undefined,
         };
     }
+
+    @httpGet("/:postId", authorize())
+    async getRoomIdByPostId(req: Request) {
+        return this.roomRepo.getRoomIdByPostId(req.params.postId);
+    }
 }

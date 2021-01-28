@@ -25,6 +25,6 @@ export abstract class RoomRepository {
     abstract getAllRooms(): Promise<Room[]>;
     abstract getMessages(userId: string, roomId: string, skip: number, take: number): Promise<PostMessage[]>;
     abstract findMessage(postId: string): Promise<Post | null>;
-
+    abstract getRoomIdByPostId( postId: string ): Promise<string>;
     abstract likeMessage(userId: string, postId: string, date: Date): Promise<void>;
 }

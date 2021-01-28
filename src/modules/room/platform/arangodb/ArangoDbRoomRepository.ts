@@ -125,4 +125,17 @@ export class ArangoDbRoomRepository extends RoomRepository {
             });
         }
     }
+
+    async getRoomIdByPostId(postId: string): Promise<string> {
+        const result = await this.cnx.db.query(`
+        for p in posts
+        filter p._key == @postId
+        return {
+            roomId: p.roomId
+        }`, {
+            postId: `${postId}`
+        });
+        const roomId = await result.next()
+        return roomId;
+    }
 }
