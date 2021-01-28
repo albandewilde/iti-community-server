@@ -87,21 +87,4 @@ export class UserController extends BaseHttpController {
         };
         return user;
     }
-
-    @httpGet("/users", authorize())
-    async getAllUsers(req: Request): Promise<Array<UserResult>> {
-        return await this.userRepo.getAllUsers();
-    }
-
-    @httpGet("/:userId", authorize())
-    async getUserById( req: Request ): Promise<UserResult> {
-        const res = (await this.userRepo.findById( req.params.userId ))!;
-        // Don't sent the password hash in the scary world
-        const user: UserResult = {
-            id: res.id,
-            username: res.username,
-            photoUrl: `${config.filesUrl}/${res.photoLocation}`
-        };
-        return user;
-    }
 }
